@@ -6,21 +6,18 @@ import tempfile
 import hashlib
 
 import yaml
-import openai
-import tiktoken
 from numpy import dot
 from numpy.linalg import norm
 
-openai.api_key = os.environ['OPENAI_API_KEY']
-MODEL = 'gpt-3.5-turbo'
+import chatgpt
 
 HISTORY = []
 PROMPTS = []
 CONNECTION = None
 REDUCERS = {}
-TOKEN_ENCODING = tiktoken.encoding_for_model(MODEL)
 DEBUG = False
 
+MODEL = chatgpt.Model()
 
 DEFAULT_MAX_TOKENS = 300
 
@@ -74,9 +71,7 @@ def get_embedding(text):
     if result:
         return json.loads(result[0])
     else:
-        embedding = openai.Embedding.create(
-            model="text-embedding-ada-002",
-            input=text)['data'][0]['embedding']
+        embedding = MODEL.embed(text)
         cursor.execute("INSERT INTO embedding_cache (key, embedding) VALUES (?, ?)", (hash, json.dumps(embedding)))
         CONNECTION.commit()
         return embedding
@@ -102,11 +97,11 @@ def drive_file(filename, cursor):
 
 
 def num_tokens(text):
-    return len(TOKEN_ENCODING.encode(text))
+    return len(MODEL.token_encode(text))
 
 
 def take_tokens(text, amount):
-    return TOKEN_ENCODING.decode(TOKEN_ENCODING.encode(text)[:amount])
+    return MODEL.token_decode(MODEL.token_encode(text)[:amount])
 
 
 # Join list_of_strings into a list of strings comprising at most max_tokens tokens.
@@ -117,10 +112,10 @@ def take_tokens_list(list_of_strings, max_tokens, truncate=True):
     i = 0
     while len(list_of_strings) > i and max_tokens > 0:
         next_string = list_of_strings[i]
-        next = TOKEN_ENCODING.encode(next_string)
+        next = MODEL.token_encode(next_string)
         if len(next) > max_tokens:
             if truncate:
-                output.append(TOKEN_ENCODING.decode(next[:max_tokens]))
+                output.append(MODEL.token_decode(next[:max_tokens]))
             else:
                 break
         else:
@@ -204,9 +199,7 @@ def tick_reducers(config, tokens, prompt):
             # Update reducer
             debug_print(f"Updating reducer {key}...")
             payload = build_payload(reducer['parts'], prompt)
-            response = openai.ChatCompletion.create(model=MODEL, 
-                                                    messages=payload,
-                                                    max_tokens=reducer['max_output'])
+            response = MODEL.infer(payload, max_tokens=reducer['max_output'])
             message = response['choices'][0]['message']
             REDUCERS[key]['value'] = message['content']
             REDUCERS[key]['budget'] = reducer['every']
@@ -264,7 +257,7 @@ def main(filename, mode):
             payload = build_payload(loop_config['parts'], prompt)
 
             debug_print(json.dumps(payload, indent=2))
-            response = openai.ChatCompletion.create(model=MODEL, messages=payload, max_tokens=loop_config.get('max_tokens', DEFAULT_MAX_TOKENS))
+            response = MODEL.infer(payload, max_tokens=loop_config.get('max_tokens', DEFAULT_MAX_TOKENS))
 
             debug_print("=== DEBUG ===")
             debug_print(f"Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.")
