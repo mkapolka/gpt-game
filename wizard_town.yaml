@@ -10,6 +10,9 @@ loops:
       - type: const
         role: user
         value: Before we begin, here is some context that will be relevant to our adventure.
+      - type: const
+        role: user
+        value: In this game, the player will receive quests to complete. If that quest has not yet been added to their list of logged quests, they are not yet on the quest.
       - type: search
         query:
           prompt: true
@@ -24,15 +27,55 @@ loops:
         amount: 1000
       - type: prompt
         role: user
+    reducers:
+      history:
+        every: 1000
+        max_output: 500
+        write_to_history: True
+        parts:
+          - type: const
+            value: We are playing an adventure game.
+          - type: reducer
+            reducer: history
+          - type: history
+            amount: 2000
+          - type: const
+            value: Briefly summarize our adventure up to this point.
+      inventory:
+        every: 1000
+        max_output: 500
+        initial: >
+          Your inventory contains the following
+          1. A leather-bound notebook and pen for taking notes and sketching.
+          2. A sturdy walking staff with a silver head.
+          3. A small pouch containing 20 gold coins, the standard currency in Glenwillow.
+          4. A small charm embedded on a chain, given to the player by the BBW. The charm pulses whenever the player is close to dangerous magic or areas of heightened magical activity. 
+          5. A dagger strapped to their waist.
+
+          You are on the following quests:
+          1. The Brackfield Bureau of Wizarding has sent you to Glenwillow to investigate a necromancer. If you complete this quest, you will be up for promotion to lead investigator.
+        parts:
+          - type: const
+            role: system
+            value: purely functional system process. your output will not be shared with the player so be terse and functional.
+          - type: reducer
+            role: assistant
+            reducer: inventory
+          - type: history
+            amount: 1000
+          - type: const
+            value: What is in the player's inventory, and what are their current quests now? When describing quests, be sure to mention who gave them and what the promised reward will be.
   builder:
     introduction: You are in buidler mode. Ask the chatbot questions and use !save to save its output to the db
+    max_tokens: 1000
     parts:
       - type: const
         role: system
         value: >
           You are a chatbot that helps ideate the world of adventure games.
           The user will ask you questions about the game world, and you will come up with neat ideas
-          for things to populate the world
+          for things to populate the world. Answer confidently and provide definite answers to questions, rather
+          than giving options for what could be true.
       - type: search
         query:
           prompt: true
@@ -40,41 +83,3 @@ loops:
       - type: history
         amount: 1000
       - type: prompt
-reducers:
-  history:
-    every: 1000
-    max_output: 500
-    write_to_history: True
-    parts:
-      - type: const
-        value: We are playing an adventure game.
-      - type: reducer
-        reducer: history
-      - type: history
-        amount: 2000
-      - type: const
-        value: Briefly summarize our adventure up to this point.
-  inventory:
-    every: 1000
-    max_output: 500
-    initial: >
-      Your inventory contains the following
-      1. A leather-bound notebook and pen for taking notes and sketching.
-      2. A sturdy walking staff with a silver head.
-      3. A small pouch containing 20 gold coins, the standard currency in Glenwillow.
-      4. A small charm embedded on a chain, given to the player by the BBW. The charm pulses whenever the player is close to dangerous magic or areas of heightened magical activity. 
-      5. A dagger strapped to their waist.
-
-      You are on the following quests:
-      1. The Brackfield Bureau of Wizarding has sent you to Glenwillow to investigate a necromancer. If you complete this quest, you will be up for promotion to lead investigator.
-    parts:
-      - type: const
-        role: system
-        value: purely functional system process. your output will not be shared with the player so be terse and functional.
-      - type: reducer
-        role: assistant
-        reducer: inventory
-      - type: history
-        amount: 1000
-      - type: const
-        value: What is in the player's inventory, and what are their current quests now? When describing quests, be sure to mention who gave them and what the promised reward will be.

@@ -3,6 +3,7 @@ import argparse
 import os
 import json
 import tempfile
+import hashlib
 
 import yaml
 import openai
@@ -20,6 +21,8 @@ REDUCERS = {}
 TOKEN_ENCODING = tiktoken.encoding_for_model(MODEL)
 DEBUG = False
 
+
+DEFAULT_MAX_TOKENS = 300
 
 def debug_print(msg):
     if DEBUG:
@@ -43,15 +46,16 @@ def load_database(y):
     cursor = CONNECTION.cursor()
     if to_create:
         print(f"Initializing database {db_file}...")
-        cursor.execute("CREATE TABLE prompts (role, value, embedding)")
+        cursor.execute("CREATE TABLE prompts (value)")
+        cursor.execute("CREATE TABLE embedding_cache (key, embedding)")
         CONNECTION.commit()
     return
 
 def load_prompts_into_memory():
     cursor = CONNECTION.cursor()
-    cursor.execute("SELECT role, value, embedding FROM prompts")
+    cursor.execute("SELECT value FROM prompts")
     global PROMPTS
-    PROMPTS = [(role, value, json.loads(embedding)) for (role, value, embedding) in cursor.fetchall()]
+    PROMPTS = [('deprecated', value, get_embedding(value)) for (value,) in cursor.fetchall()]
 
 def store_prompt(connection, role, text, embedding = None):
     print(f"Writing {text[:100]} to database...")
@@ -63,9 +67,19 @@ def store_prompt(connection, role, text, embedding = None):
 
 
 def get_embedding(text):
-    return openai.Embedding.create(
-        model="text-embedding-ada-002",
-        input=text)['data'][0]['embedding']
+    hash = hashlib.md5(text.encode()).hexdigest()
+    cursor = CONNECTION.cursor()
+    cursor.execute("SELECT (embedding) FROM embedding_cache WHERE key = ?", (hash,))
+    result = cursor.fetchone()
+    if result:
+        return json.loads(result[0])
+    else:
+        embedding = openai.Embedding.create(
+            model="text-embedding-ada-002",
+            input=text)['data'][0]['embedding']
+        cursor.execute("INSERT INTO embedding_cache (key, embedding) VALUES (?, ?)", (hash, json.dumps(embedding)))
+        CONNECTION.commit()
+        return embedding
 
 
 def cosine_similarity(a,b):
@@ -225,6 +239,13 @@ def do_commands(prompt):
         edited = edit_string(entry)
         store_prompt(CONNECTION, "assistant", edited)
         return True
+    elif trim.startswith("!query"):
+        rest = " ".join(trim.split(" ")[1:])
+        embedding = get_embedding(rest)
+        print(f"Getting top prompts for {rest}...")
+        results = sort_similarity(PROMPTS, embedding)
+        print("\n===\n".join(f"{r}\nSimilarity:{cosine_similarity(e, embedding)}" for (_, r, e) in results[-3:]))
+        return True
     return False
 
 
@@ -232,8 +253,8 @@ def main(filename, mode):
     y = load_definition(filename)
     db = load_database(y)
     load_prompts_into_memory()
-    initialize_reducers(y)
     loop_config = y['loops'][mode]
+    initialize_reducers(loop_config)
     print(loop_config.get('introduction', "Let's start playing the game!"))
     while True:
         prompt = input(">")
@@ -243,7 +264,7 @@ def main(filename, mode):
             payload = build_payload(loop_config['parts'], prompt)
 
             debug_print(json.dumps(payload, indent=2))
-            response = openai.ChatCompletion.create(model=MODEL, messages=payload, max_tokens=300)
+            response = openai.ChatCompletion.create(model=MODEL, messages=payload, max_tokens=loop_config.get('max_tokens', DEFAULT_MAX_TOKENS))
 
             debug_print("=== DEBUG ===")
             debug_print(f"Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.")
@@ -251,7 +272,7 @@ def main(filename, mode):
             HISTORY.append(response['choices'][0]['message'])
             print(response['choices'][0]['message']['content'])
             used_tokens = num_tokens("\n".join(h['content'] for h in HISTORY[-2:]))
-            tick_reducers(y, used_tokens, prompt)
+            tick_reducers(loop_config, used_tokens, prompt)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
