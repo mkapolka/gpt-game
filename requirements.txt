@@ -1,3 +1,4 @@
 chromadb
 pyyaml
 tiktoken
+colored

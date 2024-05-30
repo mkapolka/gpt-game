@@ -9,22 +9,24 @@ MODEL='llama3'
 
 # Translate from the OpenAI format to a llama3 payload
 def _openai_prompt_to_llama(parts):
-    turns = "<|eot_id|>".join([
+    return "<|begin_of_text|>" + "<|eot_id|>".join([
         f"<|start_header_id|>{part['role']}<|end_header_id|>{part['content']}"
         for part in parts
-    ])
+    ]) + "<|eot_id|><|start_header_id|>assistant<end_header_id|>"
 
-def _llama_response_to_openai(repsonse):
+def _llama_response_to_openai(response):
     return {
         "choices": [
             {
                 "message": {
+                    "role": "assistant",
                     "content": response['response']
                 }
             }
         ],
         'usage': {
-            'prompt_tokens': 0
+            'prompt_tokens': 0,
+            'total_tokens': 0,
         }
     }
 
@@ -32,23 +34,24 @@ def _llama_response_to_openai(repsonse):
 class Model():
     def infer(self, parts, max_tokens=None):
         url = f"{HOST}/api/generate"
-        response = requests.get(url, json={
+        prompt = _openai_prompt_to_llama(parts)
+        response = requests.post(url, json={
             "model": MODEL,
-            "raw": True,
-            "prompt": _translate_format(parts),
+            # "raw": True,
+            "prompt": prompt,
             "stream": False
         })
         return _llama_response_to_openai(response.json())
 
     def embed(self, text):
         url = f"{HOST}/api/embeddings"
-        response = requests.get(url, json={
+        response = requests.post(url, json={
             "model": MODEL,
             "raw": True,
             "prompt": text,
             "stream": False
         })
-        return _llama_response_to_openai(response.json())
+        return response.json()['embedding']
 
     def token_encode(self, text):
         return TOKEN_ENCODING.encode(text)

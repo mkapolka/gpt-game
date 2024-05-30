@@ -7,6 +7,7 @@ loops:
           You are a game master, playing a role playing game with the player.
           The player will tell you what they want to do, and you will respond with what happens in the game world.
           Keep your responses brief and only do what the player explicitly tells you to do.
+          Do not explicitly ask the player what they will do next. Avoid asking, 'what will you do next?'
       - type: const
         role: user
         value: Before we begin, here is some context that will be relevant to our adventure.
@@ -50,10 +51,15 @@ loops:
           2. A sturdy walking staff with a silver head.
           3. A small pouch containing 20 gold coins, the standard currency in Glenwillow.
           4. A small charm embedded on a chain, given to the player by the BBW. The charm pulses whenever the player is close to dangerous magic or areas of heightened magical activity. 
-          5. A dagger strapped to their waist.
+          5. A dagger strapped to your waist.
 
           You are on the following quests:
           1. The Brackfield Bureau of Wizarding has sent you to Glenwillow to investigate a necromancer. If you complete this quest, you will be up for promotion to lead investigator.
+
+          You can cast the following spells:
+          1. Bones into Bananas, which transmutates bones into bananas.
+          2. Illuminate, which can create a dim magical light for illuminating dark areas
+          3. Guidance, which gives you clues to help you on your quest
         parts:
           - type: const
             role: system
@@ -64,7 +70,7 @@ loops:
           - type: history
             amount: 1000
           - type: const
-            value: What is in the player's inventory, and what are their current quests now? When describing quests, be sure to mention who gave them and what the promised reward will be.
+            value: What is in the player's inventory, what are their current quests now, and what spells can the player cast? When describing quests, be sure to mention who gave them and what the promised reward will be.
   builder:
     introduction: You are in buidler mode. Ask the chatbot questions and use !save to save its output to the db
     max_tokens: 1000

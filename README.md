@@ -17,7 +17,6 @@
 * Automatically save output
 * Save checkpoints & allow returning, backtracking
 * Write... something? To DB? full history?
-* "Reducers": Context items that get replaced according to a 챗지 query
 
 ## Prompts
 

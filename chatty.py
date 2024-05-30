@@ -4,20 +4,31 @@ import os
 import json
 import tempfile
 import hashlib
+import datetime
+
+from colored import fore, back, style
 
 import yaml
 from numpy import dot
 from numpy.linalg import norm
 
-import chatgpt
+import saves
+
 
 HISTORY = []
 PROMPTS = []
 CONNECTION = None
+
+SAVES_CONNECTION = None
+SAVE_NAME = "default"
+
 REDUCERS = {}
 DEBUG = False
 
+import chatgpt
 MODEL = chatgpt.Model()
+# import ollama
+# MODEL = ollama.Model()
 
 DEFAULT_MAX_TOKENS = 300
 
@@ -26,7 +37,8 @@ def debug_print(msg):
         print(msg)
 
 
-def load_definition(filename):
+def load_definition(game_name):
+    filename = f"{game_name}.yaml"
     with open(filename, 'r') as f:
         y = yaml.load(f, yaml.Loader)
     y['path'] = os.path.abspath(filename)
@@ -184,11 +196,25 @@ def build_payload(parts, prompt):
                 for p in build_part(part_config, prompt)]
 
 def initialize_reducers(config):
-    for key, reducer in config.get('reducers', {}).items():
-        REDUCERS[key] = {
-            'budget': reducer['every'],
-            'value': reducer.get('initial', '')
-        }
+    # load from save file
+    reducers = saves.get_reducers(SAVES_CONNECTION, SAVE_NAME)
+    if reducers:
+        for reducer in reducers:
+            REDUCERS[reducer["key"]] = {
+                "value": reducer['value'],
+                "budget": reducer['budget']
+            }
+    else:
+        for key, reducer in config.get('reducers', {}).items():
+            REDUCERS[key] = {
+                'budget': reducer['every'],
+                'value': reducer.get('initial', '')
+            }
+
+def initialize_history(config):
+    history = saves.get_history(SAVES_CONNECTION, SAVE_NAME, 100)
+    global HISTORY
+    HISTORY = history
 
 def tick_reducers(config, tokens, prompt):
     for key, reducer in config.get('reducers', {}).items():
@@ -197,14 +223,17 @@ def tick_reducers(config, tokens, prompt):
         REDUCERS[key]['budget'] = budget
         if budget < 0:
             # Update reducer
-            debug_print(f"Updating reducer {key}...")
+            debug_print(f"{fore.BLUE_VIOLET}Updating reducer {key}...")
             payload = build_payload(reducer['parts'], prompt)
             response = MODEL.infer(payload, max_tokens=reducer['max_output'])
             message = response['choices'][0]['message']
             REDUCERS[key]['value'] = message['content']
+            debug_print(f"{fore.NAVY_BLUE}New value for reducer {key}:")
+            debug_print(f"{fore.BLUE}{message['content']}{style.RESET}")
             REDUCERS[key]['budget'] = reducer['every']
             if reducer.get('write_to_history'):
-                HISTORY.append(message)
+                push_history(message)
+        saves.push_reducer(SAVES_CONNECTION, SAVE_NAME, key, REDUCERS[key]['value'], REDUCERS[key]['budget'])
 
 def edit_string(s):
     t = tempfile.NamedTemporaryFile()
@@ -232,6 +261,13 @@ def do_commands(prompt):
         edited = edit_string(entry)
         store_prompt(CONNECTION, "assistant", edited)
         return True
+    elif trim.startswith("!reducers"):
+        print("{fore.MAGENTA}Current reducers:")
+        for name, reducer in REDUCERS.items():
+            print(f"{fore.RED}{name}:")
+            print(f"{fore.DARK_ORANGE}{reducer['value']}{style.RESET}")
+            print()
+        return True
     elif trim.startswith("!query"):
         rest = " ".join(trim.split(" ")[1:])
         embedding = get_embedding(rest)
@@ -241,38 +277,73 @@ def do_commands(prompt):
         return True
     return False
 
+def push_history(entry):
+    HISTORY.append(entry)
+    saves.push_history(SAVES_CONNECTION, SAVE_NAME, entry['role'], entry['content'])
 
-def main(filename, mode):
-    y = load_definition(filename)
+
+def main(game_name, mode):
+    y = load_definition(game_name)
     db = load_database(y)
     load_prompts_into_memory()
     loop_config = y['loops'][mode]
     initialize_reducers(loop_config)
+    initialize_history(loop_config)
     print(loop_config.get('introduction', "Let's start playing the game!"))
+    # Print the history if there is any
+    if len(HISTORY) > 0:
+        print("Continuing from last time...")
+        for entry in HISTORY[-10:][::-1]:
+            if entry['role'] == 'user':
+                print(f"{fore.GREEN}> {entry['content']}")
+            else:
+                print(f"{fore.WHITE}{entry['content']}")
     while True:
-        prompt = input(">")
+        prompt = input(f"{fore.GREEN}>")
+        print(style.RESET)
         if do_commands(prompt):
             continue
         else:
             payload = build_payload(loop_config['parts'], prompt)
 
-            debug_print(json.dumps(payload, indent=2))
+            # debug_print(json.dumps(payload, indent=2))
             response = MODEL.infer(payload, max_tokens=loop_config.get('max_tokens', DEFAULT_MAX_TOKENS))
 
-            debug_print("=== DEBUG ===")
-            debug_print(f"Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.")
-            HISTORY.append({"role": "user", "content": prompt})
-            HISTORY.append(response['choices'][0]['message'])
-            print(response['choices'][0]['message']['content'])
+            debug_print(f"{fore.BLUE}=== DEBUG ===")
+            debug_print(f"Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.{style.RESET}")
+            push_history({"role": "user", "content": prompt})
+            push_history(response['choices'][0]['message'])
+
+            response = response['choices'][0]['message']['content']
+            print(f"{fore.WHITE}{response}{style.RESET}")
+
             used_tokens = num_tokens("\n".join(h['content'] for h in HISTORY[-2:]))
+
             tick_reducers(loop_config, used_tokens, prompt)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", type=str, default='main', help="Which loop to execute")
-    parser.add_argument("file", type=str, help="Which adventure file to load")
+    parser.add_argument("game", type=str, help="Which adventure file to load")
     parser.add_argument("--debug", action='store_true', help="Whether or not to start with debug mode on")
+    parser.add_argument("--save-name", type=str, help="Which named save file to use")
+    parser.add_argument("--continue", dest="cont", action="store_true", help="Continue with the most recently used save file.")
 
     args = parser.parse_args()
 
-    main(args.file, args.mode)
+    DEBUG = args.debug
+
+    SAVES_CONNECTION = saves.open_save_db(args.game)
+
+    if args.save_name and args.cont:
+        raise Exception("Use either '--continue' or '--save-name', not both")
+
+    default_save_name = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
+    save_name = args.cont and saves.get_most_recent_save(SAVES_CONNECTION) or args.save_name or default_save_name
+    print(f"Using save file {save_name}")
+    if not save_name:
+        raise Exception("Couldn't find save with that name")
+
+    SAVE_NAME = save_name
+
+    main(args.game, args.mode)
