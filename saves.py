@@ -38,7 +38,12 @@ def push_reducer(connection, name, key, value, budget):
 
 def get_history(connection, name, limit):
     cursor = connection.cursor()
-    cursor.execute("SELECT time, role, message FROM history ORDER BY time DESC limit ?", (limit,))
+    cursor.execute("""
+        SELECT time, role, message 
+        FROM history 
+        WHERE save=?
+        ORDER BY time DESC 
+        LIMIT ?""", (name, limit,))
     results = cursor.fetchall()
     return [{
         "role": role,

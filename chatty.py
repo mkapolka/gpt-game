@@ -5,6 +5,7 @@ import json
 import tempfile
 import hashlib
 import datetime
+import logging
 
 from colored import fore, back, style
 
@@ -13,7 +14,6 @@ from numpy import dot
 from numpy.linalg import norm
 
 import saves
-
 
 HISTORY = []
 PROMPTS = []
@@ -30,12 +30,19 @@ MODEL = chatgpt.Model()
 # import ollama
 # MODEL = ollama.Model()
 
+logger = logging.getLogger(__name__)
+if not os.path.exists("output"):
+    os.mkdir('output')
+logging.basicConfig(filename='output/log', level=logging.INFO)
+
 DEFAULT_MAX_TOKENS = 300
 
 def debug_print(msg):
     if DEBUG:
         print(msg)
 
+def debug_log(msg):
+    logger.info(msg)
 
 def load_definition(game_name):
     filename = f"{game_name}.yaml"
@@ -225,11 +232,16 @@ def tick_reducers(config, tokens, prompt):
             # Update reducer
             debug_print(f"{fore.BLUE_VIOLET}Updating reducer {key}...")
             payload = build_payload(reducer['parts'], prompt)
+
+            debug_log("inference: " + json.dumps(payload))
+
             response = MODEL.infer(payload, max_tokens=reducer['max_output'])
             message = response['choices'][0]['message']
             REDUCERS[key]['value'] = message['content']
-            debug_print(f"{fore.NAVY_BLUE}New value for reducer {key}:")
-            debug_print(f"{fore.BLUE}{message['content']}{style.RESET}")
+
+            debug_log(f"New value for reducer {key}:")
+            debug_log(f"{message['content']}{style.RESET}")
+
             REDUCERS[key]['budget'] = reducer['every']
             if reducer.get('write_to_history'):
                 push_history(message)
@@ -286,7 +298,9 @@ def main(game_name, mode):
     y = load_definition(game_name)
     db = load_database(y)
     load_prompts_into_memory()
-    loop_config = y['loops'][mode]
+    if mode not in y['modes']:
+        raise Exception(f"No mode named {mode} found for this adventure.")
+    loop_config = y['modes'][mode]
     initialize_reducers(loop_config)
     initialize_history(loop_config)
     print(loop_config.get('introduction', "Let's start playing the game!"))
@@ -306,11 +320,12 @@ def main(game_name, mode):
         else:
             payload = build_payload(loop_config['parts'], prompt)
 
-            # debug_print(json.dumps(payload, indent=2))
+            debug_log("Main inference: " + json.dumps(payload))
+
             response = MODEL.infer(payload, max_tokens=loop_config.get('max_tokens', DEFAULT_MAX_TOKENS))
 
-            debug_print(f"{fore.BLUE}=== DEBUG ===")
-            debug_print(f"Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.{style.RESET}")
+            debug_log(f"Inference Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.{style.RESET}")
+
             push_history({"role": "user", "content": prompt})
             push_history(response['choices'][0]['message'])
 
