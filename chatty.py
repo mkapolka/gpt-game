@@ -240,7 +240,7 @@ def tick_reducers(config, tokens, prompt):
             REDUCERS[key]['value'] = message['content']
 
             debug_log(f"New value for reducer {key}:")
-            debug_log(f"{message['content']}{style.RESET}")
+            debug_log(f"{message['content']}")
 
             REDUCERS[key]['budget'] = reducer['every']
             if reducer.get('write_to_history'):
@@ -324,7 +324,7 @@ def main(game_name, mode):
 
             response = MODEL.infer(payload, max_tokens=loop_config.get('max_tokens', DEFAULT_MAX_TOKENS))
 
-            debug_log(f"Inference Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.{style.RESET}")
+            debug_log(f"Inference Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.")
 
             push_history({"role": "user", "content": prompt})
             push_history(response['choices'][0]['message'])
