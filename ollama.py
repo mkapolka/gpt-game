@@ -1,4 +1,5 @@
 import requests
+import json
 
 import tiktoken
 # TODO: What tokenizer does llama3 use?
@@ -13,6 +14,9 @@ def _openai_prompt_to_llama(parts):
         f"<|start_header_id|>{part['role']}<|end_header_id|>{part['content']}"
         for part in parts
     ]) + "<|eot_id|><|start_header_id|>assistant<end_header_id|>"
+
+def _openai_prompt_to_llama_2(parts):
+    return "\n".join(f"### {part['role']}:\n{part['content']}" for part in parts)
 
 def _llama_response_to_openai(response):
     return {
@@ -32,15 +36,30 @@ def _llama_response_to_openai(response):
 
 
 class Model():
-    def infer(self, parts, max_tokens=None):
+    def infer(self, parts, stream=False, options=None, regex=None, generation_kwargs={}, max_tokens=None):
         url = f"{HOST}/api/generate"
-        prompt = _openai_prompt_to_llama(parts)
+        prompt = _openai_prompt_to_llama_2(parts)
         response = requests.post(url, json={
             "model": MODEL,
             # "raw": True,
             "prompt": prompt,
-            "stream": False
-        })
+            "stream": stream,
+            "options": {
+                "stop": ["user:"],
+                "frequency_penalty": generation_kwargs.get('frequency_penalty', 1.0)
+            }
+        }, stream=stream)
+        response.raise_for_status()
+        if stream:
+            output = ''
+            for line in response.iter_lines():
+                decoded = line.decode('utf-8')
+                js = json.loads(decoded)
+                chunk = js['response']
+                print(chunk, end='', flush=True)
+                output += chunk
+            print()
+            return output
         return _llama_response_to_openai(response.json())
 
     def embed(self, text):
@@ -51,6 +70,7 @@ class Model():
             "prompt": text,
             "stream": False
         })
+        response.raise_for_status()
         return response.json()['embedding']
 
     def token_encode(self, text):

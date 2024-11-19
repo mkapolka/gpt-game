@@ -25,10 +25,12 @@ SAVE_NAME = "default"
 REDUCERS = {}
 DEBUG = False
 
-import chatgpt
-MODEL = chatgpt.Model()
+# import chatgpt
+# MODEL = chatgpt.Model()
 # import ollama
 # MODEL = ollama.Model()
+import vllm
+MODEL = vllm.Model()
 
 logger = logging.getLogger(__name__)
 if not os.path.exists("output"):
@@ -324,7 +326,7 @@ def main(game_name, mode):
 
             response = MODEL.infer(payload, max_tokens=loop_config.get('max_tokens', DEFAULT_MAX_TOKENS))
 
-            debug_log(f"Inference Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.")
+            # debug_log(f"Inference Cost: {response['usage']['prompt_tokens']} prompt tokens. {response['usage']['total_tokens']} total.")
 
             push_history({"role": "user", "content": prompt})
             push_history(response['choices'][0]['message'])

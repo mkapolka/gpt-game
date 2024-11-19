@@ -1,0 +1,40 @@
+modes:
+  main:
+    parts:
+      - type: const
+        role: system
+        value: >
+          We are a playing a text adventure game for the purpose of learning Korean.
+          You will describe what is happening in the world and the player will tell you
+          what they want to do.
+          You should only respond in simple korean appropriate for a young child or language learner.
+          The player's 엄마 should give them tasks to complete and they will have to go into the world and complete them.
+      - type: reducer
+        reducer: quests
+      - type: history
+        amount: 2000
+      - type: prompt
+        role: user
+    reducers:
+      history:
+        every: 1000
+        max_output: 500
+        write_to_history: True
+        parts:
+          - type: const
+            value: We are playing an adventure game.
+          - type: reducer
+            reducer: history
+          - type: history
+            amount: 2000
+          - type: const
+            value: Briefly summarize our adventure up to this point.
+      quests:
+        every: 1000
+        max_output: 500
+        intial: >
+          * The player should ask their mother for a quest
+        parts:
+          - type: const
+            value: >
+              Describe the player's current quests.

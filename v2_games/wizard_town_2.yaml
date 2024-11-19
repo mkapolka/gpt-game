@@ -1,0 +1,179 @@
+aliases:
+  place_system: &place_system
+    type: const
+    role: system
+    value: >
+      The following is the recent history of a text adventure game.
+      Read the surrounding context and answer simple questions about the contents of the text.
+      Choose the element that most closely matches what happened in the game.
+things:
+  main:
+    type: loop
+    actions:
+      - type: input
+      - type: state_machine
+        state_machine: places
+      - type: chat
+        which: turn
+        stream: true
+      - type: append_history
+        body:
+          - role: user
+            type: input
+          - role: assistant
+            type: chat
+            chat: turn
+      - type: background
+        actions:
+          - type: tick
+            reducer: inventory
+      - type: background
+        actions:
+        - type: tick
+          reducer: history
+        - type: append_history
+          body:
+            - type: reducer
+              role: assistant
+              reducer: history
+  turn:
+    type: chat
+    # Of type context spec
+    generation_kwargs:
+      frequency_penalty: 1.2
+    body:
+      - type: const
+        role: system
+        value: >
+          You are a game master, playing a role playing game with the player.
+          The player will tell you what they want to do, and you will respond with what happens in the game world.
+          Keep your responses brief and only do what the player explicitly tells you to do.
+          Do not explicitly ask the player what they will do next. Avoid asking, 'what will you do next?'
+      - type: const
+        role: user
+        value: Before we begin, here is some context that will be relevant to our adventure.
+      - type: reducer
+        role: user
+        reducer: inventory
+      - type: state_machine
+        role: user
+        state_machine: places
+      - type: const
+        role: user
+        value: The following is a recent history of the turns of the game.
+      - type: history
+        amount: 1000
+      - type: const
+        role: user
+        value: The player's input was the following. Respond with the results of their action.
+      - type: input
+        role: user
+  history:
+    type: reducer
+    every: 100
+    max_output: 500
+    write_to_history: True
+    parts:
+      - type: const
+        role: user
+        value: We are playing an adventure game.
+      - type: reducer
+        role: assistant
+        reducer: history
+      - type: history
+        amount: 2000
+      - type: const
+        role: user
+        value: Briefly summarize our adventure up to this point.
+  inventory:
+    type: reducer
+    every: 100
+    max_output: 500
+    initial: |
+      Your inventory contains the following
+      1. A leather-bound notebook and pen for taking notes and sketching.
+      2. A sturdy walking staff with a silver head.
+      3. A small pouch containing 20 gold coins, the standard currency in Glenwillow.
+      4. A small charm embedded on a chain, given to the player by the BBW. The charm pulses whenever the player is close to dangerous magic or areas of heightened magical activity. 
+      5. A dagger strapped to your waist.
+
+      You are on the following quests:
+      1. The Brackfield Bureau of Wizarding has sent you to Glenwillow to investigate a necromancer. If you complete this quest, you will be up for promotion to lead investigator.
+
+      You can cast the following spells:
+      1. Bones into Bananas, which transmutates bones into bananas.
+      2. Illuminate, which can create a dim magical light for illuminating dark areas
+      3. Guidance, which gives you clues to help you on your quest
+    parts:
+      - type: const
+        role: system
+        value: purely functional system process. your output will not be shared with the player so be terse and functional.
+      - type: reducer
+        role: assistant
+        reducer: inventory
+      - type: history
+        amount: 1000
+      - type: const
+        role: user
+        value: >
+          What is in the player's inventory, what are their current quests now,
+          and what spells can the player cast?
+          When describing quests, be sure to mention who gave them and what the promised reward will be.
+  places:
+    type: state_machine
+    initial_state: place_glenwillow
+  place_glenwillow:
+    type: state
+    body:
+      - type: const
+        role: user
+        value: >
+          The player is in the town of Glenwillow, a village populated mainly by Wizards and Witches.
+          Glenwillow has the following points of interest:
+          * the Willow Basket, a busy pub
+          * An open air marketplace
+          * Wizzow's Wands
+          * The Glenwillow library, which is teeming with magical books 
+    actions:
+      - type: chat_pick
+        body:
+          - *place_system
+          - type: history
+            role: user
+            amount: 500
+          - type: input
+            role: user
+          - type: const
+            role: user
+            value: |
+              library) The player decided to go to the library
+              town) The player is stayed in the town area
+              none) none of the above
+        options:
+          town: []
+          none: []
+          library:
+            - type: append_history
+              body:
+                - type: const
+                  role: user
+                  value: The player decided to go to the library. As the player enters the library they get attacked by an ogre
+            - type: state_transition
+              state_machine: places
+              state: place_library
+  place_library:
+    type: state
+    body:
+      - type: const
+        role: user
+        value: The player is in the library
+    actions:
+      #- type: chat_pick
+        #body:
+          #- *place_system
+        #options:
+          #library:
+            #result:
+              #- type: state_transition
+                #machine: places
+                #state: place_library

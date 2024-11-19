@@ -1,0 +1,64 @@
+model:
+  name: chatgpt
+intro:
+  actions:
+    - type: input
+      value: 안녕하세요! 제가 할 것이 뭐에요?
+    - type: chat
+      chat: turn
+      stream: true
+    - type: append_history
+      body:
+        - role: user
+          type: input
+        - role: assistant
+          type: chat
+          chat: turn
+things:
+  main:
+    type: loop
+    actions:
+      - type: input
+      - type: chat
+        chat: turn
+        stream: true
+      - type: append_history
+        body:
+          - role: user
+            type: input
+          - role: assistant
+            type: chat
+            chat: turn
+  turn:
+    type: chat
+    body:
+      - type: const
+        role: system
+        value: |
+          You are playing a language-learning game with the user.
+          the user is trying to learn Korean.
+          Respond only in Korean as much as is appropriate
+
+      - type: const
+        role: user
+        value:
+          Let's play a role playing game. I will be a child
+          running errands around town for my mother. She will give me
+          simple tasks to do, like getting groceries or helping in the garden,
+          and I will have to help. The game will proceed like a text adventure game,
+          in which you give simple descriptions of the state of the world, and I
+          respond with what I want my character to do.
+
+          The game will proceed entirely in Korean at a beginner level.
+          As much as possible, try to only respond with the 1000 most frequently used
+          Korean words.
+
+          Don't end your responses with a prompt suggesting what the player should do. For instance,
+          instead of saying
+          "부엌으로 들어가니 테이블 위에 큰 과일 상자가 있어요. 사과, 바나나, 오렌지 등이 담겨 있어요. 과일을 꺼내서 식탁에 놓아볼까요?"
+          Prefer just
+          "부엌으로 들어가니 테이블 위에 큰 과일 상자가 있어요. 사과, 바나나, 오렌지 등이 담겨 있어요."
+      - type: history
+        amount: 1000
+      - type: input
+        role: user

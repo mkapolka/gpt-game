@@ -1,0 +1,226 @@
+aliases:
+  place_system: &place_system
+    type: const
+    role: system
+    value: >
+      The following is the recent history of a text adventure game.
+      Read the surrounding context and answer simple questions about the contents of the text.
+      Choose the element that most closely matches what happened in the game.
+intro:
+  actions:
+    - type: print
+      body: &first_msgs
+        - type: const
+          role: assistant
+          value: You are in the foyer of an opulent mansion. A chandelier hangs from the ceiling above a grand staircase.
+            Doors lead out in multiple directions.
+    - type: append_history
+      body: *first_msgs
+things:
+  main:
+    type: loop
+    actions:
+      - type: input
+      - type: state_machine
+        state_machine: places
+      - type: chat
+        which: turn
+        stream: true
+      - type: append_history
+        body:
+          - role: user
+            type: input
+          - role: assistant
+            type: chat
+            chat: turn
+      - type: background
+        actions:
+          - type: chat
+            which: current_room
+          - type: print
+            body:
+              - type: chat
+                role: user
+                chat: current_room
+      - type: background
+        actions:
+          - type: tick
+            reducer: inventory
+      - type: background
+        actions:
+        - type: tick
+          reducer: history
+        - type: append_history
+          body:
+            - type: reducer
+              role: assistant
+              reducer: history
+  turn:
+    type: chat
+    # Of type context spec
+    generation_kwargs:
+      frequency_penalty: 1.2
+    body:
+      - type: const
+        role: system
+        value: >
+          You are a game master, playing a role playing game with the player.
+          The player will tell you what they want to do, and you will respond with what happens in the game world.
+          Keep your responses brief and only do what the player explicitly tells you to do.
+          Do not explicitly ask the player what they will do next. Avoid asking, 'what will you do next?'
+      - type: const
+        role: user
+        value: Before we begin, here is some context that will be relevant to our adventure.
+      - type: reducer
+        role: user
+        reducer: inventory
+      - type: state_machine
+        role: user
+        state_machine: places
+      - type: const
+        role: user
+        value: The following is a recent history of the turns of the game.
+      - type: history
+        amount: 1000
+      - type: input
+        role: user
+  history:
+    type: reducer
+    every: 1000
+    max_output: 500
+    write_to_history: True
+    parts:
+      - type: const
+        role: user
+        value: We are playing an adventure game.
+      - type: reducer
+        role: assistant
+        reducer: history
+      - type: history
+        amount: 2000
+      - type: const
+        role: user
+        value: Briefly summarize our adventure up to this point.
+  inventory:
+    type: reducer
+    every: 1000
+    max_output: 500
+    initial: |
+      Your inventory contains the following
+      1. A flashlight with about 1 hour of battery
+      2. A small pocket knife
+    parts:
+      - type: const
+        role: system
+        value: purely functional system process. your output will not be shared with the player so be terse and functional.
+      - type: reducer
+        role: assistant
+        reducer: inventory
+      - type: history
+        amount: 1000
+      - type: const
+        role: user
+        value: What does the player's inventory now contain?
+  current_room:
+    type: chat
+    choices:
+      - Foyer
+      - Reading Room
+      - Back Hallway
+      - Alchemy Lab
+      - Garden
+    body:
+      - type: const
+        role: user
+        value: The following is a brief description of the turns of an adventure game.
+      - type: history
+        amount: 1000
+      - type: const
+        role: user
+        value: The following is a description of the nearby rooms
+      - type: const
+        role: user
+        value: &rooms |
+          The game takes place in a vast mansion
+          The mansion has the following rooms:
+          == Foyer ==
+          A grand foyer with a big staircase in the middle of it. It has a vast double door leading outside,
+          as well as smaller doors leading further into the room.
+          The foyer connects to the following rooms: outside, reading room, 
+          == Reading Room ==
+          A cozy reading room furnished with comfortable leather chairs and small tables. A phonograph sits in the corner.
+          The reading room connects to: Foyer
+          == Back hallway ==
+          A functional hallway towards the back of the building that connects several rooms. The walls are lined
+          with landscape paintings.
+          Back hallway connects to: Reading room, alchemy lab
+          == Alchemy Lab ==
+          A dingy room whose walls are grimy with accumulated smoke from the foul experiments performed over the years.
+          The room contains the various implements one needs to brew magical potions- alembics, retorts, and a big iron
+          cauldron in the center of the room.
+          Alchemy lab connects to: back hallway
+          == Garden ==
+          In the front yard of the mansion is a vast garden with beautiful flowers.
+          The garden connects to: Foyer via the front doors
+
+          The player is currently in the following room:
+      - type: const
+        role: user
+        value: >
+          Given the recent discussion, what room is the player currently in?
+          Options: Foyer, Reading Room, Back Hallway, Alchemy Lab, Garden
+  places:
+    type: state_machine
+    initial_state: place_glenwillow
+  place_glenwillow:
+    type: state
+    body:
+      - type: const
+        role: user
+        value: *rooms
+      - type: chat
+        role: user
+        chat: current_room
+  place_library:
+    type: state
+    body:
+      - type: const
+        role: user
+        value: The player is in the library
+    actions:
+      #- type: chat_pick
+        #body:
+          #- *place_system
+        #options:
+          #library:
+            #result:
+              #- type: state_transition
+                #machine: places
+                #state: place_library
+    actions:
+      - type: chat_pick
+        body:
+          - *place_system
+          - type: history
+            role: user
+            amount: 500
+          - type: input
+            role: user
+          - type: const
+            role: user
+            value: |
+              library) The player decided to go to the library
+              town) The player is stayed in the town area
+              none) none of the above
+        options:
+          town: []
+          none: []
+          library:
+            - type: append_history
+              body:
+                - type: const
+                  role: user
+                  value: The player decided to go to the library. As the player enters the library they get attacked by an ogre
+            - type: state_transition
+              state_machine: places
+              state: place_library

@@ -1,0 +1,35 @@
+parts:
+  - type: const
+    role: system
+    value: >
+      You are a game master, playing a role playing game with the player.
+      The player will tell you what they want to do, and you will respond with what happens in the game world.
+      Ignore any references to rolling dice, just focus on telling a compelling story with the player
+  - type: const
+    role: user
+    value: We are going to play a fantasy role playing game. Ask me questions about the game we are going to play.
+  - type: search
+    query:
+      prompt: true
+      history: 3
+    amount: 300
+  - type: const
+    role: user
+    value: Using the background we've talked about, let's play a role playing game. You be the dungeon master who describes the game environment, and I'll be a player who says what I want my character to do. Narrate directly to me in the second person, and don't take many actions on my character's behalf.
+  - type: reducer
+    reducer: history
+  - type: history
+    amount: 300
+  - type: prompt
+    role: user
+reducers:
+  history:
+    every: 300
+    max_output: 500
+    parts:
+      - type: const
+        value: We are playing an adventure game.
+      - history:
+        amount: 300
+      - role: user
+        const: Summarize our adventure up to this point.

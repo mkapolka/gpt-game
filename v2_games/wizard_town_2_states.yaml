@@ -1,0 +1,30 @@
+anchors:
+  ps: &place_system
+    - type: const
+      role: system
+      value: You are an assistant that answers simple questions about bodies of text. Keep your answers brief and accurate.
+
+things:
+  places:
+    type: state_machine
+      # - output text
+      # - define state transitions
+      # - loop actions
+    initial_state: start
+  place_glenwillow:
+    type: state
+    body:
+      - type: const
+        role: user
+        value: The player is in the town of Glenwillow
+    actions:
+      - type: chat_pick
+        none_option: none
+        body:
+          - *place_system
+        options:
+          library:
+            result:
+              - type: state_transition
+                machine: places
+                state: place_library

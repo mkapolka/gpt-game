@@ -1,0 +1,391 @@
+Adventure Primer
+This adventure is designed for three to seven characters,
+levels 1 and 2, and is optimized for five characters with an
+average party level (APL) of 1. Characters outside this level
+range can’t participate in this adventure.
+This adventure occurs in Icewind Dale, north of the
+Spine of the World.
+
+Background
+ICEWIND DALE has been subsumed in permanent
+darkness, and the citizens of TEN-TOWNS struggle to
+survive what they’re calling the EVERLASTING RIME.
+This curse, leveled by the goddess AURIL, brings even
+greater hardship than usual to the denizens of the frozen
+lands of the North.
+
+An awakened walrus called MOTHER TUSK has
+brought a group of animals to the safety of the SPINE OF
+THE WORLD, hoping to protect them from being used by
+an evil druid to wreak further havoc on the civilized areas
+of Icewind Dale. Mother Tusk fights against civilization,
+nature, and otherworldly forces to keep her family safe,
+and she requests the heroes’ help to stem the threats
+against everyone.
+
+Overview
+The adventure’s story is spread over six parts: a prologue,
+four 1-hour episodes, and a conclusion. Played individually,
+each episode should be playable in an hour, and the entire
+adventure should be playable in approximately 4 hours.
+Characters who haven’t yet completed an episode begin
+with the prologue. Characters who’ve completed all the
+episodes, or characters who don’t plan to play any more
+episodes, experience the conclusion at the end of the
+episode they’re playing.
+
+Prologue—Avalanche. An avalanche threatens the
+characters, but they’re led to safety by an odd muskrat.
+They then meet Mother Tusk who briefs them on four
+tasks she’d like them to undertake in return for saving
+their lives during the avalanche.
+
+Unsure Footing. Mother Tusk asks the characters
+to rescue one of her children, an awakened otter
+named Spritzel, who’s been spying on Easthaven. The
+characters quickly find Spritzel, and some of his otter
+friends, fleeing from a pack of wolves.
+
+In this introduction, the characters’ path into
+Icewind Dale is blocked by an avalanche as they
+navigate a pass through the Spine of the World.
+They’re rescued by a curious animal, which leads
+to a meeting with Mother Tusk, leader of a strange
+menagerie of creatures.
+When you’re ready to begin, read:
+"""
+As snow and rocks crash down the mountainsides
+either side of you, you can’t help but wonder if this is
+how everything ends for you. What brought you here,
+navigating this dangerous mountain pass, heading north
+into the frozen lands of Icewind Dale? An opportunity for
+wealth and power? A dark secret you’re trying to escape? A
+fresh start? An old connection?
+Whatever brought you here, it seems the rumors might
+be true. Strange, weather-related phenomena are shutting
+down travel through the Spine of the World mountain
+range. Several passes have been blocked, and you thought
+this one might be clear. And it was, until now.
+As certain death descends swiftly toward you, movement
+at the corner of your eye draws your attention. A snowywhite muskrat gestures frantically, its clawed paws
+beckoning you to follow. It slides into a fissure in the
+ground that was hidden under snow and ice.
+"""
+
+Assuming the characters follow the muskrat, they plummet
+down the fissure just as the avalanche crushes everything
+in the pass. The characters fall down a vertical tunnel,
+which turns into a slide. The passage levels out, depositing
+them in an icy cavern beneath the mountains.
+"""
+The icy slide dumps you unceremoniously into a cold
+cavern. The muskrat stares you in the eye, then wiggles a
+bit, as if happy to see you survived the close call.
+A voice from deeper in the cavern echoes toward you, its
+Common marked by a slobbery rasp. “Muskie found you in
+time. Good fortune!”
+The voice comes from a ten-foot-long walrus resting in
+the shadows. A walrus calf rests at her side. It starts to
+wriggle its way toward you, but she pulls it back with one
+of her long tusks.
+Other creatures then move out of the shadows to
+examine you. This menagerie includes a variety of animals,
+everything from snow foxes to wolf pups to avian creatures
+to reptiles. A few seem to converse with each other as they
+eye you warily.
+“Excuse my children,” says the walrus. “They’re
+suspicious by nature. Their lives often depend on it. My
+children call me Mother Tusk, and you may as well. I saved
+your lives for a reason.”
+"""
+
+Use the following bullet points to guide the conversation.
+(Keep an eye on the time if you’re running the episode in an
+hour or less):
+• Mother Tusk was awakened by a goliath druid from
+the North. The druid died, and Mother Tusk took over
+stewardship of the animals in the druid’s care. (This
+is only partially true. The druid was corrupted and is
+still alive, and Mother Tusk fled from him with as many
+creatures as she could recruit. She feared he’d use the
+animals in a bloodthirsty animal army. She doesn’t wish
+to discuss this with the characters at this time.)
+• A terrible curse has befallen the lands north of the Spine
+of the World: the sun refuses to rise. Survival, never easy
+here, has been made more difficult by this curse.
+• Mother Tusk offers the characters passage beneath the
+Spine of the World if they agree to search for a scout in
+her family named Spritzel. The young otter may have
+run afoul of trouble.
+
+Shall We Just Crack On?
+If they agree to perform at least one task, Mother Tusk and
+her family lead the characters through the tunnels until
+they reach the open air. She then leads them to a cave,
+where the Redrun river meets the Redwaters lake. This is
+her current base of operations.
+Once the characters have chosen a task, proceed to the
+corresponding episode and continue.
+
+Lighting in Icewind Dale
+Unless otherwise noted in the adventure, daytime hours
+provide dim light outdoors, while the nighttime hours are
+dark. The permanent dusk of Auril’s curse makes the promise
+of sunlight seem a teasing possibility, but the sun never
+breaks the horizon.
+
+In this episode, Mother Tusk asks the characters
+to rescue one of her children, an awakened otter
+named Spritzel, who was spying on the town of
+Easthaven.
+The characters quickly find Spritzel, and some of
+his otter friends, fleeing from a pack of wolves. The otters
+take shelter in a cave with ice slides, the wolves in close
+pursuit. The characters must navigate the ice slides to save
+the otters before the wolves kill them. Then the characters
+must survive the cold trip back to Mother Tusk. When the
+characters choose this task, read:
+"""
+Mother Tusk explains what she needs you to do, “I sent one
+of my children, a young otter called Spritzel, on a scouting
+mission to watch the happenings in one of the Ten-Towns
+where the two-leggers dwell. He isn’t back yet. He often
+gets himself into trouble and I need you to go look for him
+and make sure he isn’t in danger. We’ve spotted wolves in
+the area, that could be dangerous for Spritzel.”
+"""
+
+Give the characters the chance to ask questions. Below are
+Mother Tusk’s answers to the most common questions the
+characters may ask:
+What Does Spritzel Look Like? “He’s a white-furred otter
+with a brown patch above his right eye, and he wears a
+pearl earring.”
+Who Was He Spying On? “He was watching the
+happenings in the town of Easthaven. A contact in one
+of the other towns asked me for a favor. But that isn’t
+important right now.”
+What Will You Give Us for Doing This? “I can only offer
+you my thanks, as well as the gift of your lives that I
+already saved once.”
+How Far Away Is Easthaven? “From here, it’s more than
+ten miles. But I expect Spritzel’s closer than that. Look
+for tracks as you travel northeast along the shore of
+Redwaters.”
+
+When the players head off on the task, read:
+Travel is incredibly difficult in the deep snow. A bitter wind
+cuts through your clothing, and ice crystals riding the
+strong breeze sting your eyes.
+
+Assuming the characters follow directions, it doesn’t take
+them long to find tracks:
+After you’ve traveled about two miles from Mother Tusk’s
+shelter, you notice something on the ground. Although the
+wind pushes snow around, easily spotted animal tracks
+mar the fresh dusting.
+
+A successful DC 10 Wisdom (Survival) or Intelligence
+(Nature) check reveals that the deeper tracks were made
+by wolves, while the smaller tracks on top of the snow were
+made by otters.
+At this point, call for a DC 10 group Wisdom (Survival)
+check. Give advantage to characters with backgrounds that
+would give them a lifetime of experience tracking things or
+surviving in harsh winter conditions.
+If the group succeeds, they easily follow the tracks. Go
+immediately to “Sliding” below. (If all characters succeeded
+on the check, they all have advantage on saving throws in
+the “Freezing” section below.)
+If the group fails, they lose the tracks several times and
+take longer to find the wolves and otters. The cold begins
+to take its toll. In the “Freezing” section of this episode,
+the characters have disadvantage on their saving throws.
+Continue to “Sliding” below.
+
+Sliding
+When the characters reach the end of the trail they’re
+following, read:
+Ahead of you, through the blowing snow, a pack of wolves
+chase a romp of a dozen otters, which weave through and
+around snow mounds and ice formations.
+As the wolves close in, the sneaky otters zip through
+holes in the snow-packed earth. The wolves hesitate, but
+then the lead wolf barks a command, and the wolves leap
+into the holes as well, baying as they go.
+
+If the players ask if one of the otters was Spritzel, a
+successful DC 10 Wisdom (Perception) check confirms that
+one had a brown patch above its eye and a pearl earring.
+Further, a successful DC 10 Wisdom (Animal Handling)
+check reveals that the lead wolf was acting strangely, as if
+it was more intelligent than a normal wolf. (This is because
+the wolf is awakened, and if the party is Very Strong, it’s a
+dire wolf.)
+
+The characters can quickly reach the holes in the earth,
+which are large enough for Medium creatures to enter
+without issue. They hear the growls of wolves and the
+squeaking of otters echoing up from the depths.
+If the characters jump into the holes, they find themselves
+on a series of ice slides leading down. Traversing these
+slides requires a Dexterity (Acrobatics) check. The results
+of the check for each character determine what happens
+when they reach the bottom:
+* Poor result: The character lands in a heap at the bottom.
+They take 3 (1d6) bludgeoning damage from the
+fall and start combat prone.
+* Bad result: The character takes no damage but starts
+combat prone.
+* Fine result: The character navigates the slide successfully and
+lands on their feet at the bottom of the slides.
+* Good result: The character lands in perfect fighting position
+and has advantage on their initiative roll.
+
+Inspiration. Ask the players to narrate and describe their
+characters’ trips down the ice slides. Award inspiration to
+players who do so with enthusiasm and storytelling skill.
+When all the characters have landed at the bottom of the
+slides, continue to “Fighting.
+
+When you’re ready to continue, read:
+The ice slides end in a chamber flooded with a foot of
+frigid water. The otters swim adeptly at the far side of the
+cavern, avoiding the wolves’ snapping jaws. The icy bite of
+the water seeps up your wet clothes.
+At the back of the cavern, a low, ice-covered shelf rises
+out of the water.
+
+For a view of the area, refer to The Ice Slides Map.
+Wolves. Four wolves are attacking the otters but are
+having trouble catching the slippery creatures. The leader
+of the wolf pack is Vundrel, an awakened wolf sent by her
+druid master to hunt Mother Tusk and her family.
+When the characters arrive, Vundrel growls at them in
+deep, snarling Common, “This is our hunt. Find your own
+food.” That’s all the talking Vundrel does before ordering
+her packmates to attack the characters.
+Otters. The otters use the Dodge action until the
+characters intervene. On the third round of combat, once
+it’s obvious the characters are here to assist them, Spritzel
+calls on his otter friends to help the characters:
+“Let’s get ’em, mates! What ho!” squeaks Spritzel in
+Common. The otters don’t have stats, but they work as a
+team. Each round, they swarm the closest wolf, and the
+next attack roll against that wolf has advantage.
+Alternately, if one of the characters is in trouble, the
+otters instead help that character, and the next attack roll
+against that character has disadvantage
+
+Saving Spritzel
+If the characters defeat the wolves, Spritzel’s overjoyed. He
+addresses the characters in a high, squeaky voice humming
+with overwrought energy:
+“Thank you! We were returning from the town, and we saw
+a vicious owlbear with black feathers and we ran away, but
+then we saw the wolves, so we ran from them, but they saw
+us and chased us and we couldn’t lose them, but we found
+these tunnels, but they followed us down, but you rescued
+us—” He stops abruptly. “Wow, you look cold!”
+
+Treasure. The frozen body of an explorer who died here
+months ago rests on the back shelf of the cave. The only
+thing of note on the body are its boots, which are boots of
+false tracks embroidered with gaudy, but worthless, gems.
+Continue with “Freezing.”
+
+When the combat ends and the characters (and the otters)
+are out of immediate danger, a new danger presents itself:
+Dripping wet in the freezing water, the cold of the North
+seeps into your bones. This frigid water could kill you
+unless you find a way to get warm and to dry your clothes,
+but the chamber is flooded with water and there’s nothing
+to burn. What are you going to do?
+
+Anyone proficient in Survival or who succeeds on a DC 10
+Wisdom (Survival) or Intelligence (Nature) check knows
+the following:
+• Being drenched in cold water then moving through air
+this cold is most likely fatal in three hours or less.
+• It’s at least a three-hour walk back to Mother Tusk’s
+location, and that’s only true if someone isn’t slowed
+from exhaustion. Even an hour in the cold could easily
+lead to serious exhaustion.
+• Creating a heat source to dry off and warm up is vital to
+survival at this point. Unfortunately, there isn’t much to
+burn in a watery cavern.
+Remember, if the party failed their checks to track the
+animals earlier, their Constitution saving throws to avoid
+freezing (see below) are made with disadvantage. (If all the
+characters succeeded on their checks, they have advantage
+on these saving throws.)
+
+The characters have a few choices
+to make if they want to survive:
+A Cold, Wet Trek. If they just climb out of the tunnels
+and start back to Mother Tusk’s location, they must succeed
+on a DC 10 Constitution saving throw or gain a level of
+exhaustion for each 30 minutes of travel during the 3-hour
+trek. (That means 6 checks.) If any character gains 2
+levels of exhaustion, they then move at half speed. Strong
+characters might carry exhausted characters, but it’s still a
+huge risk
+
+Burning Wolves. The characters can attempt to set
+the dead wolves ablaze to make heat. This could be
+done on the ice shelf in the cavern, but the smoke could
+be dangerous. This allows the characters to dry their
+clothes and get warm, but they must succeed on a DC 10
+Constitution saving throw or gain a level of exhaustion
+from the smoke.
+Climbing the ice slides with the wolves’ bodies is possible
+but takes effort. Each attempt takes 30 minutes, and the
+characters must succeed on a DC 12 group skill check.
+Allow each character to use an ability and skill that makes
+sense to the overall success of the endeavor. This lets them
+get the wolves out, where they can burn them without
+worrying about fumes.
+Wherever they decide to start the fire, they must have
+the means to start it. Fire magic, dry tinderboxes, or a
+successful DC 10 Wisdom (Survival) check to light a fire
+without the proper tools are three options.
+
+Finding Wood or Other Fuel. If the characters attempt
+to get to the surface without dragging the wolves, it takes
+30 minutes to climb out, no check needed. From there, the
+characters can collect enough fuel with a successful DC
+10 group skill check. Allow each character to use an ability
+and skill that makes sense to the overall success of the
+endeavor. Then they must have a means to start the fire,
+such as fire magic, dry tinderboxes, or a successful DC 10
+Wisdom (Survival) check to light a fire without proper tools
+
+Otter Assistance. The romp of otters can assist in small
+ways, but they must do so as a group. For example, they can
+assist one character in their assigned task. Or alternatively,
+the otters can huddle around one character to provide them
+with enough warmth to automatically succeed on their next
+Constitution saving throw against the cold.
+
+Magic. Spellcasters will inevitably try to fix the entire
+problem with cantrips like prestidigitation, druidcraft,
+or control flames. Allow ingenious uses of this magic to
+help the cause without completely overcoming the entire
+challenge. For example, allow 30 minutes of casting one of
+these spells every round to dry one person’s clothes, giving
+them advantage on their saving throws to resist the cold.
+Of course, a character on cantrip duty can’t contribute to a
+task like moving wolves or searching for fuel.
+
+Conclusion
+If the characters get back to Mother Tusk’s encampment, she
+starts a fire to warm them up. Spritzel excitedly recounts the
+harrowing fight with the wolves and the journey back, and he
+offers them his earring as a thank you, as well as other small
+gems and trinkets he’s hidden away in the area. Mother
+Tusk rewards the characters with two spell scrolls of cure
+wounds. They can also take a long rest in her care.
+At the end of this episode, if a character has completed
+two episodes, they may choose to gain a level—or they can
+decline the level. However, once they reach level 3, they
+may not play any more episodes in this adventure.
