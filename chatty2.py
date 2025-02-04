@@ -58,6 +58,12 @@ def init_state(game_def):
             STATE['THINGS'][id] = {
                 'state': initial_state
             }
+        elif t == 'places':
+            initial_place = thing['initial_place']
+            STATE['THINGS'][id] = {
+                'place': initial_state,
+                'history': []
+            }
 
 def get_thing(name):
     return STATE['THINGS'][name]
@@ -142,6 +148,11 @@ def fill_context(context_definition):
                 'content': get_thing(chat)['value']
             })
         elif t == 'state_machine':
+            which = element['state_machine']
+            machine_state = get_thing(which)['state']
+            state_def = GAME['things'][machine_state]
+            output += fill_context(state_def.get('body', []))
+        elif t == 'place':
             which = element['state_machine']
             machine_state = get_thing(which)['state']
             state_def = GAME['things'][machine_state]
@@ -248,6 +259,18 @@ def perform_actions(definition):
         elif t == 'loop':
             which = action['loop']
             perform_actions(GAME['things'][which]['actions'])
+        elif t == 'places':
+            which = action['place']
+            places = GAME['things'][which]
+            current_place = STATE['things'][which]['place']
+            prompt_body = places['prompt_body']
+            payload = fill_context(payload)
+            out_links = places[current_place]['adjacent_places']
+            result = MODEL.infer(payload, options=out_links)
+            if result != current_place:
+                place_history = STATE['things'][which]['history']
+                place_history.remove(result)
+                place_history = [result] + place_history
         else:
             raise Exception("Unrecognized action type: ", t)
 
@@ -293,7 +316,8 @@ if __name__ == "__main__":
     ARGS = args
     done = False
     with ThreadPoolExecutor() as worker:
-        perform_actions(GAME['intro']['actions'])
+        if 'intro' in GAME and 'actions' in GAME['intro']:
+            perform_actions(GAME['intro']['actions'])
         while not done:
             THREAD_POOL = worker
             perform_actions(GAME['things']['main']['actions'])

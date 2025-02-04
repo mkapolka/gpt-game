@@ -1,60 +1,24 @@
 # Chat GPT RPG
 
-## Links
-
-### Research
-
-* [Awesome Chat GPT Prompts](https://github.com/f/awesome-chatgpt-prompts)
-* [Chroma: Open Source Embedding DB](https://docs.trychroma.com/getting-started)
-
-### Tech
-
-* [Open API Playground](https://platform.openai.com/playground?mode=insert)
-* [Open API Docs - Text Completion](https://platform.openai.com/docs/guides/completion/prompt-design)
-
-## TODO
-
-* Automatically save output
-* Save checkpoints & allow returning, backtracking
-* Write... something? To DB? full history?
-
-## Prompts
-
-```
-The context's data is as follows:
-====
-STATE
-The cardboard box in my living room contains a shirt, two hotdogs, and an apple
-====
-
-The player has entered the following prompt:
-I tear apart the box with my bare hands 
-
-After perfoming the player's action, the context will be
-=====
-STATE
-[insert]
-=====
-```
-
-## Different Embedding Techniques
-
-### Instructor Embedding
-
-Fine tune by providing prompts, works on wide range of types of texts
-
-* [Github Page](https://github.com/HKUNLP/instructor-embedding#model-list)
+## Usage
+`OPENAI_API_KEY=<foo> python3 chatty2.py v2_games/test_town.yaml --model chatgpt`
+Either that or replace `test_town.yaml` with `wizard_town_2.yaml`.
+Neither are written very well as I've mostly been playing around with the underlying mechanics and seeing 
+what kinds of structures I can get up to, but you can read the yaml files to get a sense of what's in the games
+to see how what you get up to matches up with what's written.
 
 ## Notes
+Code might be in random states of workingness, don't expect much. This repo has two swings at the GPT RPG idea:
 
-Giving the player a fixed name turned the prompting from very GM and gamey into more of a story. ChatGPT is making a lot more chocies on my behalf, and not asking me what I want to do.
+`chatty.py` was a RAG focused approach. The cool thing about this is you can stuff a lot of data into a database and it
+sometimes can pull out relevant data to guide the experience with, but it's hard to get it to select the correct relevant data.
 
-System prompt seemed to fix it up pretty well
+Once I started playing around with structured output, I went more in the direction of `chatty2.py`, which has a more guided structure.
+You can use structured output to have the LLM answer questions about the state of the game - did this trigger event happen? Did the player
+take damage? Did they move into this location? And then you can update a state machine that provides the context.
 
-Post summarization, it interprets my next prompt as a response to the summary. Move it back one place in the history?
-
-Turns out I had a bug, the summary prompt & response were in opposite order, so the summary came before the prompt. Moving them in the correct order seemed to fix it
-
-Had an adventure in which Alaric sent me on a quest to a dungeon to retrieve a book. I managed to return and give him the book, but the game forgot that Alaric runs the library and that he promised to teach me a spell
-
-Context didn't seem to select relevant segments. Nothing about Alaric- which seems like it'd have high TFIDF at least
+The only other kind of novel idea here is the idea of "reducers", which keep track of a little piece of state and you ask the LLM
+to run a specified prompt once in a while to update that piece of state. This is particularly good for two things- keeping track of
+history on a longer timescale (the prompt would be something like "summarize what's happened in the adventure up to this point", and
+you keep the output of that around to put into the context), and keeping track of the player's inventory, quest log, 
+or other things that would be too fussy to keep in a general summary but are highly important to the player.

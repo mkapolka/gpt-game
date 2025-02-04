@@ -11,10 +11,8 @@ things:
     type: loop
     actions:
       - type: input
-      - type: state_machine
-        state_machine: places
       - type: chat
-        which: turn
+        chat: turn
         stream: true
       - type: append_history
         body:
@@ -27,6 +25,10 @@ things:
         actions:
           - type: tick
             reducer: inventory
+      - type: background
+        actions:
+          - type: state_machine
+            state_machine: places
       - type: background
         actions:
         - type: tick
@@ -177,3 +179,35 @@ things:
               #- type: state_transition
                 #machine: places
                 #state: place_library
+  places2:
+    type: places
+    initial_place: library
+    prompt_body:
+      - type: const
+        role: user
+        value: Which of the following statements most accurately describes the player's current position?
+      - type: place_conditions
+        place: places2
+        output: conditions
+        role: user
+    places:
+      library:
+        condition: The player is in the Glenwillow library
+        condition_key: library
+        adjacent_places: foobar
+        parts:
+          - type: const
+            role: user
+            value: |
+              Glenwillow has a towering library in the eastern part of the town. The library is staffed by a group of elderly wizards who are always eager to help. 
+              The library is filled with magical books and scrolls, some of which are said to be cursed.
+            # More detailed information appears lower down, if the player is actually in a given location
+          - type: const
+            role: user
+            value: |
+              Many types of books can be found in the library including:
+              * A book on the history of Glenwillow
+              * A book on the history of the Brackfield Bureau of Wizarding
+              * A book on the history of the Glenwillow library
+              * A book of magic spells
+              * A book about magical monsters

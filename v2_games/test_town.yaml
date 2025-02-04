@@ -24,7 +24,7 @@ things:
       - type: state_machine
         state_machine: places
       - type: chat
-        which: turn
+        chat: turn
         stream: true
       - type: append_history
         body:
